@@ -3,10 +3,30 @@
 const Controller = require("egg").Controller;
 
 const createRule = {
-  accesstoken: "string",
-  title: "string",
-  tab: { type: "enum", values: ["ask", "share", "job"], required: false },
-  content: "string",
+  positions: {
+    type: "array",
+    itemType: "object",
+    rule: {
+      department: "string",
+      code: { type: "string", required: false },
+      name: "string",
+      type: "string",
+      majorType: "string",
+      minorType: "string",
+      recruitment: "int",
+      phone: "string",
+      education: "string",
+      degree: "string",
+      gender: "string",
+      experience: "string",
+      politic: "string",
+      nation: "string",
+      age: "string",
+      household: "string",
+      major: "string",
+      remarks: { type: "string", required: false },
+    },
+  },
 };
 
 class PositionController extends Controller {
@@ -14,28 +34,26 @@ class PositionController extends Controller {
    * Get upload file from http request.
    */
   async upload() {
-    const { ctx } = this;
-    const filepath = await ctx.service.position.createFile();
-    await ctx.service.position.createPositionsByFile(filepath);
-    ctx.body = `user: ${ctx.params.year}, ${ctx.params.provinceId}`;
-    ctx.status = 201;
+    const filepath = await this.ctx.service.position.createFile();
+    const positions = this.ctx.service.position.getPositionsByFile(filepath);
+    this.ctx.validate(createRule, { positions });
+    this.ctx.body = { positions };
+    this.ctx.status = 201;
   }
 
   async index() {
-    const ctx = this.ctx;
-    ctx.body = {
+    this.ctx.body = {
       topic_id: "test",
     };
-    ctx.status = 201;
+    this.ctx.status = 201;
   }
 
   async create() {
-    const ctx = this.ctx;
     // ctx.validate(createRule, ctx.request.body);
-    ctx.body = {
+    this.ctx.body = {
       topic_id: "test",
     };
-    ctx.status = 201;
+    this.ctx.status = 201;
   }
 }
 

@@ -42,6 +42,7 @@ class HelperService extends Service {
   /**
    * load excel to memory
    * @param filePath
+   * @return worksheet in json format
    */
   readXlsx(filePath) {
     this.ctx.logger.debug(`Read file from ${filePath}`);
@@ -52,7 +53,8 @@ class HelperService extends Service {
   }
 
   /**
-   * Create date + uuid
+   * Create unique id by combine date + uuid
+   * @return unique id
    */
   createUniqueId() {
     return moment(new Date()).format("YYYMMDDHHmm") + "-" + uuidv4();
@@ -69,13 +71,14 @@ class HelperService extends Service {
 
   /**
    * Change cols names of excel
+   * TODO Optimise the efficiency
    * @param result excel parsed result
    * @param pre pre cols of excel
    * @param after after modified cols of excel
    */
   changeColsNames(result, pre, after) {
     if (pre.length !== after.length) {
-      throw new Error("pre must be compatible to after");
+      throw new Error("changeColsNames:pre must be compatible to after");
     }
 
     let rs = JSON.stringify(result);

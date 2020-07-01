@@ -2,26 +2,26 @@ const Service = require("egg").Service;
 
 class PositionService extends Service {
   /**
-   * Create file from multipart file stream.
+   * Async create file from multipart file stream.
    * @return created file path
    */
   async createFile() {
     const stream = await this.ctx.getFileStream();
+
     const filepath = await this.ctx.service.helper.saveFile(
       stream,
       "positions",
       "招聘公告.xlsx"
     );
 
-    await this.createPositionsByFile(filepath);
     return filepath;
   }
 
   /**
-   * Create positions from file exists on disk.
+   * Sync get positions objects from file exists on disk.
    * @param filepath file path
    */
-  async createPositionsByFile(filepath) {
+  getPositionsByFile(filepath) {
     const result = this.ctx.service.helper.readXlsx(filepath);
     const after = [
       "department",
@@ -65,13 +65,7 @@ class PositionService extends Service {
       "备注",
     ];
 
-    const converted = this.ctx.service.helper.changeColsNames(
-      result,
-      pre,
-      after
-    );
-
-    this.ctx.logger.debug(converted);
+    return this.ctx.service.helper.changeColsNames(result, pre, after);
   }
 
   async index() {}
