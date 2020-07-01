@@ -1,6 +1,7 @@
 "use strict";
 
 const Controller = require("egg").Controller;
+
 const createRule = {
   accesstoken: "string",
   title: "string",
@@ -9,13 +10,17 @@ const createRule = {
 };
 
 class PositionController extends Controller {
+  /**
+   * Get upload file from http request.
+   */
   async upload() {
     const { ctx } = this;
-    const filename = await ctx.service.position.createFile();
-
-    ctx.body = {};
+    const filepath = await ctx.service.position.createFile();
+    await ctx.service.position.createPositionsByFile(filepath);
+    ctx.body = `user: ${ctx.params.year}, ${ctx.params.provinceId}`;
     ctx.status = 201;
   }
+
   async index() {
     const ctx = this.ctx;
     ctx.body = {

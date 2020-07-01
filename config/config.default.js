@@ -1,6 +1,7 @@
 /* eslint valid-jsdoc: "off" */
 
 "use strict";
+const path = require("path");
 
 /**
  * @param {Egg.EggAppInfo} appInfo app info
@@ -39,6 +40,8 @@ module.exports = (appInfo) => {
     fileExtensions: [".xlsx"],
     whitelist: [".xlsx"],
   };
+
+  config.uploadPath = path.join(appInfo.baseDir, "upload");
 
   // add your user config here
   const userConfig = {
