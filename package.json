@@ -12,6 +12,7 @@
     "egg-scripts": "^2.11.0",
     "egg-sequelize": "^5.2.1",
     "egg-validate": "^2.0.2",
+    "jsonwebtoken": "^8.5.1",
     "moment": "^2.27.0",
     "mysql2": "^2.1.0",
     "uuid": "^8.2.0",
@@ -32,6 +33,9 @@
     "node": ">=10.0.0"
   },
   "scripts": {
+    "create:tables": "npx sequelize db:migrate",
+    "drop:tables": "npx sequelize db:migrate:undo",
+    "redo:tables": "npm run drop:tables && npm run create:tables",
     "start": "egg-scripts start --daemon --title=egg-server-node-falcon",
     "stop": "egg-scripts stop --title=egg-server-node-falcon",
     "dev": "cross-env EGG_SERVER_ENV=local egg-bin dev",

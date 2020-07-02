@@ -5,7 +5,8 @@ const XLSX = require("xlsx");
 const Service = require("egg").Service;
 const moment = require("moment");
 const uuidv4 = require("uuid").v4;
-
+const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
 class HelperService extends Service {
   /**
    * Get absolute dirname path
@@ -78,7 +79,10 @@ class HelperService extends Service {
    */
   changeColsNames(result, pre, after) {
     if (pre.length !== after.length) {
-      throw new Error("changeColsNames:pre must be compatible to after");
+      throw new Error({
+        message: "Validation Failed",
+        code: "invalid_param",
+      });
     }
 
     let rs = JSON.stringify(result);
@@ -89,6 +93,46 @@ class HelperService extends Service {
     }
 
     return JSON.parse(rs);
+  }
+
+  /**
+   * Crypto string
+   * @param string string to be crypto
+   * @return cryptoed string
+   */
+  cryptoString(string) {
+    return crypto
+      .createHmac("sha256", this.app.config.keys)
+      .update(string)
+      .digest("base64");
+  }
+
+  /**
+   * Create JWT
+   * @param username
+   * @return JWT
+   */
+  createJWT(username) {
+    return jwt.sign({ username }, this.app.config.keys, {
+      expiresIn: "7d",
+    });
+  }
+
+  /**
+   * Validate ctx.request.body whether in specified schema
+   * @param rule schema
+   * @param value ctx.request.body
+   * @return boolean if successful return true else return false
+   */
+  validate(rule, value) {
+    try {
+      this.ctx.validate(rule, value);
+      return true;
+    } catch (error) {
+      this.ctx.body = error;
+      this.ctx.status = 400;
+      return false;
+    }
   }
 }
 

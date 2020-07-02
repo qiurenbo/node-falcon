@@ -35,10 +35,19 @@ class PositionController extends Controller {
    */
   async upload() {
     const filepath = await this.ctx.service.position.createFile();
-    const positions = this.ctx.service.position.getPositionsByFile(filepath);
-    this.ctx.validate(createRule, { positions });
-    this.ctx.body = { positions };
-    this.ctx.status = 201;
+    try {
+      const positions = this.ctx.service.position.getPositionsByFile(filepath);
+      this.ctx.validate(createRule, { positions });
+
+      this.ctx.body = { msg: "File has been uploaded successfully." };
+      this.ctx.status = 201;
+    } catch (error) {
+      this.ctx.body = {
+        message: "Validation Failed",
+        code: "invalid_file",
+      };
+      this.ctx.status = 400;
+    }
   }
 
   async index() {
