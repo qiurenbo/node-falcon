@@ -8,7 +8,7 @@ module.exports = (app) => {
 
   // position
   router.post(
-    "/api/v1/upload/positions/:year/:provinceId",
+    "/api/v1/upload/positions/:year/:province_id",
     app.controller.v1.position.upload
   );
   router.resources("/api/v1/positions", app.controller.v1.position);

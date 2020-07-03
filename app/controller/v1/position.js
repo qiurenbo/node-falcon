@@ -2,17 +2,17 @@
 
 const Controller = require("egg").Controller;
 
-const createRule = {
+const rule = {
   positions: {
     type: "array",
     itemType: "object",
     rule: {
       department: "string",
       code: { type: "string", required: false },
-      name: "string",
+      namde: "string",
       type: "string",
-      majorType: "string",
-      minorType: "string",
+      major_type: "string",
+      minor_type: "string",
       recruitment: "int",
       phone: "string",
       education: "string",
@@ -34,19 +34,23 @@ class PositionController extends Controller {
    * Get upload file from http request.
    */
   async upload() {
-    const filepath = await this.ctx.service.position.createFile();
     try {
-      const positions = this.ctx.service.position.getPositionsByFile(filepath);
-      this.ctx.validate(createRule, { positions });
+      const filepath = await this.ctx.service.position.createFile();
+      const positions = this.ctx.service.helper.readXlsx(filepath);
+
+      this.ctx.service.helper.validate(rule, { positions });
+      await this.ctx.service.position.bulkCreate(positions);
 
       this.ctx.body = { msg: "File has been uploaded successfully." };
       this.ctx.status = 201;
     } catch (error) {
-      this.ctx.body = {
-        message: "Validation Failed",
-        code: "invalid_file",
-      };
-      this.ctx.status = 400;
+      this.ctx.body = error;
+      if (error instanceof ValidatorError) {
+        this.ctx.status = 400;
+      } else {
+        // database error
+        this.ctx.status = 500;
+      }
     }
   }
 

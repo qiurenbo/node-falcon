@@ -7,6 +7,7 @@ const moment = require("moment");
 const uuidv4 = require("uuid").v4;
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
+const { ValidatorError } = require("../error");
 class HelperService extends Service {
   /**
    * Get absolute dirname path
@@ -71,31 +72,6 @@ class HelperService extends Service {
   }
 
   /**
-   * Change cols names of excel
-   * TODO Optimise the efficiency
-   * @param result excel parsed result
-   * @param pre pre cols of excel
-   * @param after after modified cols of excel
-   */
-  changeColsNames(result, pre, after) {
-    if (pre.length !== after.length) {
-      throw new Error({
-        message: "Validation Failed",
-        code: "invalid_param",
-      });
-    }
-
-    let rs = JSON.stringify(result);
-    for (let i = 0; i < pre.length; i++) {
-      let replace = pre[i];
-      let re = new RegExp(replace, "g");
-      rs = rs.replace(re, after[i]);
-    }
-
-    return JSON.parse(rs);
-  }
-
-  /**
    * Crypto string
    * @param string string to be crypto
    * @return cryptoed string
@@ -127,11 +103,8 @@ class HelperService extends Service {
   validate(rule, value) {
     try {
       this.ctx.validate(rule, value);
-      return true;
     } catch (error) {
-      this.ctx.body = error;
-      this.ctx.status = 400;
-      return false;
+      throw new ValidatorError(error.code, error.message, error.errors);
     }
   }
 }

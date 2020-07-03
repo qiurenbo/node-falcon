@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
-
+const { AuthError } = require("../error");
+const { invalidToken } = require("../error/commonErrors");
 module.exports = () => {
   /**
    * get access token from cookie
@@ -15,23 +16,26 @@ module.exports = () => {
     ) {
       await next();
     } else {
-      const token = ctx.cookies.get("accessToken");
-      if (token) {
-        try {
-          jwt.verify(token, ctx.app.config.keys);
-        } catch (error) {
-          ctx.status = 403;
-          ctx.body = error;
-
-          return;
+      try {
+        const token = ctx.cookies.get("accessToken");
+        if (!token) {
+          throw new AuthError(invalidToken, "token required");
         }
+
+        // Find user
+        const username = jwt.verify(token, ctx.app.config.keys).username;
+        const user = await ctx.model.User.findOne({
+          where: { username: username },
+        });
+
+        if (!user) {
+          throw new AuthError(invalidToken, "invalid token");
+        }
+
         await next();
-      } else {
-        ctx.status = 403;
-        ctx.body = {
-          message: "Access Token Required",
-          code: "required_access_token",
-        };
+      } catch (error) {
+        ctx.status = 401;
+        ctx.body = error;
         return;
       }
     }

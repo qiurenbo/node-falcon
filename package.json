@@ -34,7 +34,7 @@
   },
   "scripts": {
     "create:tables": "npx sequelize db:migrate",
-    "drop:tables": "npx sequelize db:migrate:undo",
+    "drop:tables": "npx sequelize db:migrate:undo:all",
     "redo:tables": "npm run drop:tables && npm run create:tables",
     "start": "egg-scripts start --daemon --title=egg-server-node-falcon",
     "stop": "egg-scripts stop --title=egg-server-node-falcon",

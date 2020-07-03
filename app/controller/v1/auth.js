@@ -1,5 +1,7 @@
 "use strict";
 
+const { AuthError, ValidatorError } = require("../../error");
+const { invalidUsernameOrPassword } = require("../../error/commonErrors");
 const Controller = require("egg").Controller;
 
 class AuthController extends Controller {
@@ -9,30 +11,36 @@ class AuthController extends Controller {
       password: "string",
     };
 
-    if (!this.ctx.service.helper.validate(rule, this.ctx.request.body)) {
-      return;
-    }
+    try {
+      this.ctx.service.helper.validate(rule, this.ctx.request.body);
+      // Find user and compare the crypto password
+      const username = this.ctx.request.body.username;
+      const user = await this.ctx.model.User.findOne({ where: { username } });
+      const loginPassword = this.ctx.service.helper.cryptoString(
+        this.ctx.request.body.password
+      );
 
-    // Find user and compare the crypto password
-    const username = this.ctx.request.body.username;
-    const user = await this.ctx.model.User.findOne({ where: { username } });
-    const loginPassword = this.ctx.service.helper.cryptoString(
-      this.ctx.request.body.password
-    );
-
-    // If username and password compared correctly
-    if (user && user.password === loginPassword) {
-      // set cookie
-      const accessToken = this.ctx.service.auth.setCookies();
-      this.ctx.body = { accessToken };
-      this.ctx.status = 200;
-    } else {
-      // If username and password auth failed
-      this.ctx.body = {
-        code: "invalid_username_or_password",
-        message: "Invalid username or password.",
-      };
-      this.ctx.status = 401;
+      // If username and password compared correctly
+      if (user && user.password === loginPassword) {
+        // set cookie
+        const accessToken = this.ctx.service.auth.setCookies();
+        this.ctx.body = { accessToken };
+        this.ctx.status = 200;
+      } else {
+        // If username and password auth failed
+        throw new AuthError(
+          invalidUsernameOrPassword,
+          "invalid username or password"
+        );
+      }
+    } catch (error) {
+      this.ctx.body = error;
+      if (error instanceof AuthError) {
+        this.ctx.status = 401;
+      }
+      if (error instanceof ValidatorError) {
+        this.ctx.status = 400;
+      }
     }
   }
 
