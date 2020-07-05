@@ -17,7 +17,7 @@ module.exports = (appInfo) => {
   config.keys = appInfo.name + "_1593391807344_4353";
 
   // add your middleware config here
-  config.middleware = ["auth"];
+  config.middleware = ["auth", "error"];
 
   config.security = {
     csrf: {

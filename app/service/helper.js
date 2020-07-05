@@ -95,10 +95,10 @@ class HelperService extends Service {
   }
 
   /**
-   * Validate ctx.request.body whether in specified schema
+   * Validate ctx.request.body whether in specified schema.
+   * Throw ValidatorError if validate failed.
    * @param rule schema
    * @param value ctx.request.body
-   * @return boolean if successful return true else return false
    */
   validate(rule, value) {
     try {

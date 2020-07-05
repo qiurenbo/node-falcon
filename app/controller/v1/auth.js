@@ -11,36 +11,26 @@ class AuthController extends Controller {
       password: "string",
     };
 
-    try {
-      this.ctx.service.helper.validate(rule, this.ctx.request.body);
-      // Find user and compare the crypto password
-      const username = this.ctx.request.body.username;
-      const user = await this.ctx.model.User.findOne({ where: { username } });
-      const loginPassword = this.ctx.service.helper.cryptoString(
-        this.ctx.request.body.password
-      );
+    this.ctx.service.helper.validate(rule, this.ctx.request.body);
+    // Find user and compare the crypto password
+    const username = this.ctx.request.body.username;
+    const user = await this.ctx.model.User.findOne({ where: { username } });
+    const loginPassword = this.ctx.service.helper.cryptoString(
+      this.ctx.request.body.password
+    );
 
-      // If username and password compared correctly
-      if (user && user.password === loginPassword) {
-        // set cookie
-        const accessToken = this.ctx.service.auth.setCookies();
-        this.ctx.body = { accessToken };
-        this.ctx.status = 200;
-      } else {
-        // If username and password auth failed
-        throw new AuthError(
-          invalidUsernameOrPassword,
-          "invalid username or password"
-        );
-      }
-    } catch (error) {
-      this.ctx.body = error;
-      if (error instanceof AuthError) {
-        this.ctx.status = 401;
-      }
-      if (error instanceof ValidatorError) {
-        this.ctx.status = 400;
-      }
+    // If username and password compared correctly
+    if (user && user.password === loginPassword) {
+      // set cookie
+      const accessToken = this.ctx.service.auth.setCookies();
+      this.ctx.body = { accessToken };
+      this.ctx.status = 200;
+    } else {
+      // If username and password auth failed
+      throw new AuthError(
+        invalidUsernameOrPassword,
+        "invalid username or password"
+      );
     }
   }
 
@@ -51,9 +41,7 @@ class AuthController extends Controller {
       email: "string",
     };
 
-    if (!this.ctx.service.helper.validate(rule, this.ctx.request.body)) {
-      return;
-    }
+    this.ctx.service.helper.validate(rule, this.ctx.request.body);
     // HMAC
     this.ctx.request.body.password = this.ctx.service.helper.cryptoString(
       this.ctx.request.body.password
