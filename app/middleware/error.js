@@ -11,10 +11,11 @@ module.exports = () => {
       } else if (error instanceof ValidatorError) {
         ctx.status = 400;
       } else {
-        ctx.body = {
-          error: "server_internal_error",
-          message: "server internal error",
-        };
+        if (ctx.app.config.env === "prod")
+          ctx.body = {
+            error: "server_internal_error",
+            message: "server internal error",
+          };
       }
     }
   };
