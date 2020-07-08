@@ -30,6 +30,7 @@ class PositionService extends Service {
    * @param positions positions to be created
    */
   async bulkCreate(positions) {
+    // Destroy old rows
     await this.ctx.model.Position.destroy({
       where: {
         province_id: this.ctx.params.province_id,
@@ -39,6 +40,7 @@ class PositionService extends Service {
 
     await this.ctx.model.Position.bulkCreate(positions);
 
+    // Add province and year
     await this.ctx.model.Position.update(
       {
         province_id: this.ctx.params.province_id,

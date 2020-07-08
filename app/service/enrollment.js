@@ -32,6 +32,7 @@ class EnrollmentService extends Service {
    * @param enrollments enrollments to be created
    */
   async bulkCreate(enrollments) {
+    // Destroy old rows
     await this.ctx.model.Enrollment.destroy({
       where: {
         province_id: this.ctx.params.province_id,
@@ -41,6 +42,7 @@ class EnrollmentService extends Service {
 
     await this.ctx.model.Enrollment.bulkCreate(enrollments);
 
+    // Add province and year
     await this.ctx.model.Enrollment.update(
       {
         province_id: this.ctx.params.province_id,
