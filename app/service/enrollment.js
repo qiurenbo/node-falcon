@@ -1,8 +1,9 @@
+"use strict";
 const mkdirp = require("mkdirp");
-const path = require("path");
 const Service = require("egg").Service;
+const path = require("path");
 
-class PositionService extends Service {
+class EnrollmentService extends Service {
   /**
    * Async create file from multipart file stream.
    * @return created file path
@@ -12,13 +13,14 @@ class PositionService extends Service {
     const dirname = path.join(
       this.app.config.uploadPath,
       this.ctx.params.province_id,
-      "positions"
+      "enrollments"
     );
+
     const filePath = path.join(
       dirname,
       `${this.ctx.service.helper.createUniqueId()}-${
         this.ctx.params.year
-      }}-招聘公告.xlsx`
+      }-缴费公告.xlsx`
     );
 
     mkdirp.sync(dirname);
@@ -26,20 +28,20 @@ class PositionService extends Service {
   }
 
   /**
-   * Bulk create positions and filled with year and province id
-   * @param positions positions to be created
+   * Bulk create enrollments and filled with year and province id
+   * @param enrollments enrollments to be created
    */
-  async bulkCreate(positions) {
-    await this.ctx.model.Enrollment.delete({
+  async bulkCreate(enrollments) {
+    await this.ctx.model.Enrollment.destroy({
       where: {
         province_id: this.ctx.params.province_id,
         year: this.ctx.params.year,
       },
     });
 
-    await this.ctx.model.Position.bulkCreate(positions);
+    await this.ctx.model.Enrollment.bulkCreate(enrollments);
 
-    await this.ctx.model.Position.update(
+    await this.ctx.model.Enrollment.update(
       {
         province_id: this.ctx.params.province_id,
         year: this.ctx.params.year,
@@ -47,8 +49,6 @@ class PositionService extends Service {
       { where: { province_id: null, year: null } }
     );
   }
-
-  async index() {}
 }
 
-module.exports = PositionService;
+module.exports = EnrollmentService;

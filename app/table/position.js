@@ -1,4 +1,4 @@
-const { UUID, STRING, DATE, UUIDV4, TEXT } = require("sequelize");
+const { UUID, STRING, DATE, UUIDV4, TEXT, INTEGER } = require("sequelize");
 module.exports = {
   id: { type: UUID, defaultValue: UUIDV4, primaryKey: true },
   department: STRING,
@@ -7,7 +7,7 @@ module.exports = {
   type: STRING,
   major_type: STRING,
   minor_type: STRING,
-  recruitment: STRING,
+  recruitment: INTEGER,
   phone: STRING,
   education: STRING,
   degree: STRING,

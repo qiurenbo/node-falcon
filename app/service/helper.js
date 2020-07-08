@@ -10,33 +10,19 @@ const jwt = require("jsonwebtoken");
 const { ValidatorError } = require("../error");
 class HelperService extends Service {
   /**
-   * Get absolute dirname path
-   * @param category file category used as parent dir
-   */
-  createDirname(category) {
-    return path.join(this.app.config.uploadPath, category);
-  }
-
-  /**
    * Save file to specified path
    * @param stream uploaded file stream
-   * @param category file category used as parent dir
-   * @param basename basename
+   * @param filePath file path
    */
-  async saveFile(stream, category, basename) {
-    const filepath = this.createUniqueFilepath(
-      this.createDirname(category),
-      basename
-    );
-
-    // Get target filepath stream
-    const writeStream = fs.createWriteStream(filepath, { flags: "w" });
+  async saveFile(stream, filePath) {
+    // Get target  filePath stream
+    const writeStream = fs.createWriteStream(filePath, { flags: "w" });
 
     return new Promise((resolve, reject) => {
       stream.pipe(writeStream);
       writeStream.on("finish", () => {
-        this.ctx.logger.debug(`Write ${filepath} to disk.`);
-        resolve(filepath);
+        this.ctx.logger.debug(`Write ${filePath} to disk.`);
+        resolve(filePath);
       });
     });
   }
@@ -64,11 +50,10 @@ class HelperService extends Service {
 
   /**
    * Get unique file path: date + uuid
-   * @param dirname absolute dirname path
-   * @param basename basename of path
+   * @param filePath absolute file path
    */
-  createUniqueFilepath(dirname, basename) {
-    return path.join(dirname, this.createUniqueId() + "-" + basename);
+  createUniqueFilepath(filePath) {
+    return path.join(this.createUniqueId() + "-", filePath);
   }
 
   /**

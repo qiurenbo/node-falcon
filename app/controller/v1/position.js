@@ -1,7 +1,7 @@
 "use strict";
 
 const Controller = require("egg").Controller;
-
+const mkdirp = require("mkdirp");
 const rule = {
   positions: {
     type: "array",
