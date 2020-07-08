@@ -30,7 +30,7 @@ class PositionService extends Service {
    * @param positions positions to be created
    */
   async bulkCreate(positions) {
-    await this.ctx.model.Enrollment.destroy({
+    await this.ctx.model.Position.destroy({
       where: {
         province_id: this.ctx.params.province_id,
         year: this.ctx.params.year,

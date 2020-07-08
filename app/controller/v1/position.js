@@ -40,6 +40,9 @@ class PositionController extends Controller {
     this.ctx.service.helper.validate(rule, { positions });
     await this.ctx.service.position.bulkCreate(positions);
 
+    // async create temporary table if positions changed
+    this.ctx.service.sync.createTempTable();
+
     this.ctx.body = { msg: "File has been uploaded successfully." };
     this.ctx.status = 201;
   }

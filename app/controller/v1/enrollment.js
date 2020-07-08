@@ -27,6 +27,9 @@ class EnrollmentController extends Controller {
     this.ctx.service.helper.validate(rule, { enrollments });
     await this.ctx.service.enrollment.bulkCreate(enrollments);
 
+    // async create temporary table if enrollments changed
+    this.ctx.service.sync.createTempTable();
+
     this.ctx.body = { msg: "File has been uploaded successfully." };
     this.ctx.status = 201;
   }
