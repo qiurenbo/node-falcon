@@ -34,7 +34,10 @@ class PositionController extends Controller {
    * Get upload file from http request.
    */
   async upload() {
-    const filepath = await this.ctx.service.position.createFile();
+    const filepath = await this.ctx.service.helper.createFile(
+      "positions",
+      "报名公告.xlsx"
+    );
     const positions = this.ctx.service.helper.readXlsx(filepath);
 
     this.ctx.service.helper.validate(rule, { positions });

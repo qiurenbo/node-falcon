@@ -5,29 +5,6 @@ const path = require("path");
 
 class EnrollmentService extends Service {
   /**
-   * Async create file from multipart file stream.
-   * @return created file path
-   */
-  async createFile() {
-    const stream = await this.ctx.getFileStream();
-    const dirname = path.join(
-      this.app.config.uploadPath,
-      this.ctx.params.province_id,
-      "enrollments"
-    );
-
-    const filePath = path.join(
-      dirname,
-      `${this.ctx.service.helper.createUniqueId()}-${
-        this.ctx.params.year
-      }-缴费公告.xlsx`
-    );
-
-    mkdirp.sync(dirname);
-    return await this.ctx.service.helper.saveFile(stream, filePath);
-  }
-
-  /**
    * Bulk create enrollments and filled with year and province id
    * @param enrollments enrollments to be created
    */

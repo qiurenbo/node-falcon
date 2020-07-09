@@ -4,6 +4,7 @@ const path = require("path");
 const XLSX = require("xlsx");
 const Service = require("egg").Service;
 const moment = require("moment");
+const mkdirp = require("mkdirp");
 const uuidv4 = require("uuid").v4;
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
@@ -91,6 +92,29 @@ class HelperService extends Service {
     } catch (error) {
       throw new ValidatorError(error.code, error.message, error.errors);
     }
+  }
+  /**
+   * Async create file from multipart file stream.
+   * @param dirname dirname under province
+   * @param filename filename as suffix
+   * @return created file path
+   */
+  async createFile(dirname, filename) {
+    const stream = await this.ctx.getFileStream();
+    const trueDirname = path.join(
+      this.app.config.uploadPath,
+      this.ctx.params.province_id,
+      dirname
+    );
+
+    const filePath = path.join(
+      trueDirname,
+      `${this.createUniqueId()}-${this.ctx.params.year}-${filename}`
+    );
+
+    this.ctx.logger.debug(filePath);
+    mkdirp.sync(trueDirname);
+    return await this.saveFile(stream, filePath);
   }
 }
 

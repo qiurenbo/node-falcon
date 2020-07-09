@@ -21,7 +21,10 @@ class EnrollmentController extends Controller {
    * Get upload file from http request.
    */
   async upload() {
-    const filepath = await this.ctx.service.enrollment.createFile();
+    const filepath = await this.ctx.service.helper.createFile(
+      "enrollments",
+      "缴费公告.xlsx"
+    );
     const enrollments = this.ctx.service.helper.readXlsx(filepath);
 
     this.ctx.service.helper.validate(rule, { enrollments });
